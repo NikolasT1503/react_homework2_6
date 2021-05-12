@@ -21,13 +21,52 @@ import FolderIcon from "@material-ui/icons/Folder";
 import RestoreIcon from "@material-ui/icons/Restore";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
-
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import DraftsIcon from '@material-ui/icons/Drafts';
+import SendIcon from '@material-ui/icons/Send';
 
 import Button from "@material-ui/core/Button";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+
 import { makeStyles } from "@material-ui/core/styles";
+import { withStyles } from '@material-ui/core/styles';
+
+const StyledMenu = withStyles({
+  paper: {
+    border: '1px solid #d3d4d5',
+  },
+})((props) => (
+  <Menu
+    elevation={0}
+    getContentAnchorEl={null}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'center',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'center',
+    }}
+    {...props}
+  />
+));
+
+const StyledMenuItem = withStyles((theme) => ({
+  root: {
+    '&:focus': {
+      backgroundColor: theme.palette.primary.main,
+      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+        color: theme.palette.common.white,
+      },
+    },
+  },
+}))(MenuItem);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -77,7 +116,19 @@ function App() {
   const classes = useStyles();
   const [value, setValue] = React.useState("recents");
 
-  const handleChange = (event, newValue) => {setValue(newValue)}
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <AppBar position="fixed">
@@ -87,10 +138,39 @@ function App() {
               edge="start"
               color="inherit"
               aria-label="menu"
+              aria-controls="customized-menu"
+              aria-haspopup="true"
               className={classes.menuButton}
+              onClick={handleClick}
             >
               <MenuIcon />
             </IconButton>
+            <StyledMenu
+              id="customized-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <StyledMenuItem>
+                <ListItemIcon>
+                  <SendIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Создать тест" />
+              </StyledMenuItem>
+              <StyledMenuItem>
+                <ListItemIcon>
+                  <DraftsIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Редактировать тест" />
+              </StyledMenuItem>
+              <StyledMenuItem>
+                <ListItemIcon>
+                  <InboxIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Удалить тест" />
+              </StyledMenuItem>
+            </StyledMenu>
             <Typography variant="h6" className={classes.title}>
               Тесты
             </Typography>
@@ -242,7 +322,14 @@ function App() {
             icon={<FolderIcon />}
           />
         </BottomNavigation>
-        <Typography align="center" color="textSecondary" component="p" variant="subtitle1">Тесты React JS Material</Typography>
+        <Typography
+          align="center"
+          color="textSecondary"
+          component="p"
+          variant="subtitle1"
+        >
+          Тесты React JS Material
+        </Typography>
       </footer>
     </>
   );
